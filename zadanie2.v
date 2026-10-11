@@ -111,36 +111,54 @@ Check Nat.leb_le.  (* forall n m, (n <=? m) = true <-> n <= m *)
 Theorem minus_n_n : forall n,
   minus n n = 0.
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  induction n as [| n' IHn'].
+  - simpl. reflexivity.
+  - simpl. exact IHn'.
+Qed.
 
 (* Úloha 3.2: Dokážte: n * 0 = 0 *)
 Theorem mul_0_r : forall n:nat,
   n * 0 = 0.
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  induction n as [| n' IHn'].
+  - simpl. reflexivity.
+  - simpl. exact IHn'.
+Qed.
 
 (* Úloha 3.3: Dokážte: n * 1 = n *)
 Theorem mult_n_1 : forall n, n * 1 = n.
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  induction n as [| n' IHn'].
+  - simpl. reflexivity.
+  - simpl. rewrite IHn'. reflexivity.
+Qed.
 
 (* Úloha 3.4: Dokážte, že 1 + (n + m) = n + (1 + m) *)
 Theorem plus_n_Sm : forall n m : nat,
   S (n + m) = n + (S m).
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  intros n m. induction n as [| n' IHn'].
+  - simpl. reflexivity.
+  - simpl. rewrite IHn'. reflexivity.
+Qed.
 
 (* Úloha 3.5: Dokážte komutatívnosť sčítania *)
 Theorem add_comm : forall n m : nat,
   n + m = m + n.
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  intros n m. induction n as [| n' IHn'].
+  - simpl. rewrite Nat.add_0_r. reflexivity.
+  - simpl. rewrite IHn'. apply plus_n_Sm.
+Qed.
 
 (* Úloha 3.6: Dokážte asociativnosť sčítania *)
 Theorem add_assoc : forall n m p : nat,
   n + (m + p) = (n + m) + p.
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  intros n m p. induction n as [| n' IHn'].
+  - simpl. reflexivity.
+  - simpl. rewrite IHn'. reflexivity.
+Qed.
 
 (* Definícia: Funkcia double zdvojnásobí argument *)
 Fixpoint double (n:nat) :=
@@ -152,7 +170,10 @@ Fixpoint double (n:nat) :=
 (* Úloha 3.7: Dokážte, že double n = n + n *)
 Lemma double_plus : forall n, double n = n + n .
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  induction n as [| n' IHn'].
+  - simpl. reflexivity.
+  - simpl. rewrite IHn'. rewrite plus_n_Sm. reflexivity.
+Qed.
 
 (* Úloha 3.8
 Jedným nepraktickým aspektom definície even 
@@ -169,19 +190,36 @@ Print even.
 Theorem even_S : forall n : nat,
   even (S n) = negb (even n).
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  induction n as [| n' IHn'].
+  - simpl. reflexivity.
+  - rewrite IHn'. simpl. rewrite Bool.negb_involutive. reflexivity.
+Qed.
 
 (* Úloha 3.9: Zamiešanie sčítania *)
 Theorem add_shuffle3 : forall n m p : nat,
   n + (m + p) = m + (n + p).
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  intros n m p.
+  rewrite add_assoc.
+  rewrite (add_comm n m).
+  rewrite <- add_assoc.
+  reflexivity.
+Qed.
 
 (* Úloha 3.10: Komutativnosť násobenia *)
 Theorem mul_comm : forall m n : nat,
   m * n = n * m.
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  intros m n. induction m as [| m' IHm'].
+  - simpl. rewrite mul_0_r. reflexivity.
+  
+  - simpl. rewrite IHm'. 
+    assert (H: forall a b, a * S b = a + a * b).
+    { intros a b. induction a as [| a' IHa'].
+      - simpl. reflexivity.
+      - simpl. rewrite IHa'. rewrite add_shuffle3. reflexivity. }
+    symmetry. apply H.
+Qed.
 
 (* Úloha 3.11: 
 Ak má hypotéza tvar H: P → a = b, 
@@ -195,36 +233,49 @@ Print leb.
 Theorem plus_leb_compat_l : forall n m p : nat,
   (n <=? m) = true -> ((p + n) <=? (p + m)) = true.
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  intros n m p H.
+  induction p as [| p' IHp'].
+  - simpl. exact H.
+  - simpl. exact IHp'.
+Qed.
 
 (* Úloha 3.12: Reflexivita leb *)
 Theorem leb_refl : forall n:nat,
   (n <=? n) = true.
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  induction n as [| n' IHn'].
+  - simpl. reflexivity.
+  - simpl. exact IHn'.
+Qed.
 
 (* Úloha 3.13: 0 sa nerovná 1 + n *)
 Theorem zero_neqb_S : forall n:nat,
   (0 =? S n) = false.
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  intros n. simpl. reflexivity.
+Qed.
 
 (* Úloha 3.14: b && false = false *)
 Theorem andb_false_r : forall b : bool,
   andb b false = false.
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  destruct b.
+  - simpl. reflexivity.
+  - simpl. reflexivity.
+Qed.
 
 (* Úloha 3.15: 1+n sa nerovná 0 *)
 Theorem S_neqb_0 : forall n:nat,
   (S n =? 0) = false.
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  intros n. simpl. reflexivity.
+Qed.
 
 (* Úloha 3.16: 1 * n = n *)
 Theorem mult_1_l : forall n:nat, 1 * n = n.
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  intros n. simpl. apply Nat.add_0_r.
+Qed.
 
 (* Úloha 3.17: Logická kombinácia orb/andb/negb *)
 Theorem all3_spec : forall b c : bool,
@@ -234,20 +285,27 @@ Theorem all3_spec : forall b c : bool,
          (negb c))
   = true.
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  destruct b; destruct c; simpl; reflexivity.
+Qed.
 
 (* Úloha 3.18: Distribútivita násobenia 
 cez sčítanie sprava *)
 Theorem mult_plus_distr_r : forall n m p : nat,
   (n + m) * p = (n * p) + (m * p).
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  intros n m p. induction n as [| n' IHn'].
+  - simpl. reflexivity.
+  - simpl. rewrite IHn'. rewrite add_assoc. reflexivity.
+Qed.
 
 (* Úloha 3.19: Asociativnosť násobenia *)
 Theorem mult_assoc : forall n m p : nat,
   n * (m * p) = (n * m) * p.
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  intros n m p. induction n as [| n' IHn'].
+  - simpl. reflexivity.
+  - simpl. rewrite IHn'. rewrite mult_plus_distr_r. reflexivity.
+Qed.
 
 (* Úloha 3.20: add_shuffle3' s replace
    Taktika replace a with b nahradí a výrazom b v cieli.
@@ -258,7 +316,12 @@ Proof.
 Theorem add_shuffle3' : forall n m p : nat,
   n + (m + p) = m + (n + p).
 Proof.
-  (* Doplnte dôkaz *) Admitted.
+  intros n m p.
+  replace (n + (m + p)) with ((n + m) + p) by (symmetry; apply add_assoc).
+  replace (m + (n + p)) with ((m + n) + p) by (symmetry; apply add_assoc).
+  replace (n + m) with (m + n) by (symmetry; apply add_comm).
+  reflexivity.
+Qed.
 
 (*********************************************)
 (**         Funkcie vyššieho rádu            **)
@@ -282,12 +345,14 @@ Compute fold_right (fun l acc => l ++ acc) [] [[1];[2;3];[4]].
    Pri doplnení tela môžete použiť exact (fold_right ...). *)
 Definition sum_lengths (l : list (list nat)) : nat.
 Proof.
-  (* Doplňte telo definície a ukončite ho Defined. *) Admitted.
+  exact (fold_right (fun l acc => length l + acc) 0 l).
+Defined.
 
 Example sum_lengths_example :
   sum_lengths [[1];[];[2;3;2];[4]] = 5.
 Proof.
-  (* Doplňte dôkaz výpočtom. *) Admitted.
+  simpl. reflexivity.
+Qed.
 
 (* Úloha 3.23: Dokážte indukciou nad l, že map zachováva dĺžku.
    Nepoužívajte hotovú knižničnú vetu map_length. *)
@@ -295,11 +360,17 @@ Theorem map_length_exercise : forall (X Y : Type)
   (f : X -> Y) (l : list X),
   length (map f l) = length l.
 Proof.
-  (* Doplňte dôkaz. *) Admitted.
+  intros X Y f l. induction l as [| x l' IHl'].
+  - simpl. reflexivity.
+  - simpl. rewrite IHl'. reflexivity.
+Qed.
 
 (* Úloha 3.24: Dokážte indukciou nad l, že filter s testom,
    ktorý vždy vracia true, zachová celý zoznam. *)
 Theorem filter_true_exercise : forall (X : Type) (l : list X),
   filter (fun _ => true) l = l.
 Proof.
-  (* Doplňte dôkaz. *) Admitted.
+  intros X l. induction l as [| x l' IHl'].
+  - simpl. reflexivity.
+  - simpl. rewrite IHl'. reflexivity.
+Qed.
